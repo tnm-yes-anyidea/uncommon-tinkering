@@ -46,7 +46,7 @@ unicode_lookalikes = {
 }
 
 # --- LOGIC ---
-def obfuscate(text, prob=0.4):
+def obfuscate(text, prob=0.8):
     return "".join(random.choice(unicode_lookalikes[c]) if c in unicode_lookalikes and random.random() < prob else c for c in text)
 
 def main():
