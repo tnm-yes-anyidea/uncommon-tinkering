@@ -1,0 +1,33 @@
+{
+  "README.md": [
+    "The README serves as the front door to this repository.",
+    "It contains the basic goals of the 'Uncommon Tinkering' project and instructions on how to navigate the various experiments found here."
+  ],
+  "src": [
+    "This is the heart of the repository where the primary source code resides.",
+    "Inside, you will find various sub-modules and logic files that drive the functionality of my current builds.",
+    "I am currently focusing on keeping this organized for easy scaling later."
+  ],
+  "cool-script.js": [
+    "A utility script designed for specialized data processing.",
+    "It handles the asynchronous fetching of repository metadata and prepares it for the UI layer."
+  ],
+  "Mem-stat.py": [
+    "Memory statistic of any programm running in an linux OS,",
+    "Also calculates other dependencies too"
+  ],
+  "IndiansInWorld.py": [
+    "Gives statistics about the Indian Diaspora in interactive graphs using Python libraries"
+  ],
+  "netSpeed.py": [
+    "This program calculates speed of your internet by using an open-source library,",
+    "works on all the OS"
+  ],
+  "descriptions.json": [
+    "This file stores the metadata and multi-paragraph explanations for every project in the repo.",
+    "It is fetched dynamically by the frontend to provide context to users."
+  ],
+  "index.html": [
+    "File to show the static website of this repo"
+  ]
+}
