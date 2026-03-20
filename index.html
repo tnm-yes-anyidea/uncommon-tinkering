@@ -129,16 +129,24 @@
             }
         }
 
-        // 2. Render the files list to the HTML
+        // 2. Filter out dotfiles from the files array
+        function filterDotfiles(files) {
+            return files.filter(file => !file.name.startsWith('.'));
+        }
+
+        // 3. Render the files list to the HTML
         function renderFiles(files, descriptionsMap) {
             const fileList = document.getElementById('file-list');
             
-            if (files.length === 0) {
+            // Filter out dotfiles
+            const visibleFiles = filterDotfiles(files);
+            
+            if (visibleFiles.length === 0) {
                 fileList.innerHTML = "<li>No files found in this repository.</li>";
                 return;
             }
 
-            fileList.innerHTML = files.map(file => {
+            fileList.innerHTML = visibleFiles.map(file => {
                 // Get description array by filename key
                 const rawDesc = descriptionsMap[file.name];
                 
@@ -168,7 +176,7 @@
             }).join('');
         }
 
-        // 3. Initialize the app
+        // 4. Initialize the app
         async function init() {
             const fileList = document.getElementById('file-list');
             const now = new Date().getTime();

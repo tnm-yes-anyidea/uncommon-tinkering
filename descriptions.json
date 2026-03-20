@@ -24,13 +24,19 @@
     "works on all the OS"
   ],
   "descriptions.json": [
-    "This file stores the metadata and multi-paragraph explanations for every project in the repo.",
-    "It is fetched dynamically by the frontend to provide context to users."
+    "has descriptions for the files hosted here"
   ],
   "index.html": [
-    "File to show the static website of this repo"
+    "The thing running this website which you are viewing now"
   ],
   "infoupdater.py": [
-    "Updates information about files in the repo to descriptions.json"
+    "This the the original script that updates everything"
+  ],
+  "encry.py": [
+    "Encrypt using lookalikes of alphabets,",
+    "Requirements:",
+    "Unicode-supported font and terminal",
+    "cryptography library",
+    "uv installed (RUN IT USING UV)"
   ]
 }
