@@ -29,5 +29,8 @@
   ],
   "index.html": [
     "File to show the static website of this repo"
+  ],
+  "infoupdater.py": [
+    "Updates information about files in the repo to descriptions.json"
   ]
 }
