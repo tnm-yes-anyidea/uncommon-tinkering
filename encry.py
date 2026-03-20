@@ -1,3 +1,8 @@
+# /// script
+# dependencies = [
+#   "cryptography",
+# ]
+# ///
 import sys
 import random
 import hashlib
