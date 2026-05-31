@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# 1. Define the recording filename
+FILENAME="recording_$(date +%s).cast"
+
+# 2. The self-destruct mechanism (10 minutes)
+(
+    sleep 600
+    pkill -P $$ asciinema
+    kill $$
+) &
+
+# 3. Clean the terminal UI
+clear
+
+# 4. Run asciinema with the specific PS1
+# We use 'env -i' to strip most environment variables for a "clean" terminal
+# We explicitly set PS1 to ~/(main) 
+asciinema rec "$FILENAME" -q --command "bash --norc --noprofile -i -c 'export PS1=\"~/(main) \"; exec bash --norc'"
+
+echo "Recording finished and saved to $FILENAME."

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Some of my one-filers </title>
+    <style>
+        body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #000;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.88);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1);
+            border: 1px solid #222;
+        }
+
+        h1 {
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .repo-desc {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        ul { list-style-type: none; padding: 0; }
+
+        li {
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        li:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #4db8ff;
+            transform: translateY(-2px);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        a.file-link {
+            color: #4db8ff;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-info {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .description-container p {
+            font-size: 1em;
+            color: #ccc;
+            line-height: 1.7;
+            margin: 12px 0;
+        }
+
+        .analysis-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #ffcc00;
+            text-decoration: none;
+            border: 1px solid #ffcc00;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: 0.3s;
+        }
+
+        .analysis-link:hover {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .no-desc { color: #555; font-style: italic; }
+        .loading { text-align: center; padding: 50px; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Uncommon Tinkering</h1>
+        <p class="repo-desc">Project Directory: <strong>tnm-yes-anyidea/uncommon-tinkering</strong></p>
+        
+        <ul id="file-list">
+            <li class="loading">Syncing with GitHub and retrieving descriptions...</li>
+        </ul>
+    </div>
+
+    <script>
+        const repoOwner = 'tnm-yes-anyidea';
+        const repoName = 'uncommon-tinkering';
+        const repoApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+        const descriptionsUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/descriptions.json`;
+        const CACHE_EXPIRATION = 3600000; 
+
+        async function fetchDescriptions() {
+            try {
+                const response = await fetch(descriptionsUrl);
+                if (!response.ok) return {};
+                return await response.json();
+            } catch (err) {
+                console.error("Could not load descriptions.json", err);
+                return {};
+            }
+        }
+
+        function filterDotfiles(files) {
+            return files.filter(file => !file.name.startsWith('.'));
+        }
+
+        function renderFiles(files, descriptionsMap) {
+            const fileList = document.getElementById('file-list');
+            const visibleFiles = filterDotfiles(files);
+            
+            if (visibleFiles.length === 0) {
+                fileList.innerHTML = "<li>No files found in this repository.</li>";
+                return;
+            }
+
+            fileList.innerHTML = visibleFiles.map(file => {
+                const rawDesc = descriptionsMap[file.name];
+                let descHtml = `<span class="no-desc">No description available for ${file.name}.</span>`;
+                
+                if (rawDesc && Array.isArray(rawDesc)) {
+                    descHtml = rawDesc
+                        .map(para => `<p>${para}</p>`)
+                        .join('');
+                    
+                    // Logic to inject the diaspora analysis link
+                    if (file.name === "IndiansInWorld.py") {
+                        descHtml += `
+                            <a href="https://github.com/tnm-yes-anyidea/uncommon-tinkering/blob/main/extras/diaspora_analysis.png" 
+                               target="_blank" 
+                               class="analysis-link">
+                               📊 View Diaspora Analysis Image
+                            </a>`;
+                    }
+                }
+
+                return `
+                    <li>
+                        <div class="file-header">
+                            <a href="${file.html_url}" target="_blank" class="file-link">
+                                ${file.name}
+                            </a>
+                            <span class="file-info">${file.type}</span>
+                        </div>
+                        <div class="description-container">
+                            ${descHtml}
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        async function init() {
+            const fileList = document.getElementById('file-list');
+            const now = new Date().getTime();
+
+            try {
+                const cachedData = localStorage.getItem('github_files_cache');
+                const cachedTime = localStorage.getItem('github_files_timestamp');
+
+                if (cachedData && cachedTime && (now - cachedTime < CACHE_EXPIRATION)) {
+                    const data = JSON.parse(cachedData);
+                    const descriptions = await fetchDescriptions(); 
+                    renderFiles(data.files, descriptions);
+                    return;
+                }
+
+                const [repoRes, descriptionsMap] = await Promise.all([
+                    fetch(repoApiUrl),
+                    fetchDescriptions()
+                ]);
+
+                if (!repoRes.ok) throw new Error("GitHub API Error: " + repoRes.statusText);
+
+                const files = await repoRes.json();
+
+                localStorage.setItem('github_files_cache', JSON.stringify({ files }));
+                localStorage.setItem('github_files_timestamp', now.toString());
+
+                renderFiles(files, descriptionsMap);
+            } catch (error) {
+                fileList.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Error: ${error.message}</p>`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

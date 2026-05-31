@@ -1,0 +1,55 @@
+{
+  "README.md": [
+    "The README serves as the front door to this repository.",
+    "It contains the basic goals of the 'Uncommon Tinkering' project and instructions on how to navigate the various experiments found here."
+  ],
+  "src": [
+    "This is the heart of the repository where the primary source code resides.",
+    "Inside, you will find various sub-modules and logic files that drive the functionality of my current builds.",
+    "I am currently focusing on keeping this organized for easy scaling later."
+  ],
+  "cool-script.js": [
+    "A utility script designed for specialized data processing.",
+    "It handles the asynchronous fetching of repository metadata and prepares it for the UI layer."
+  ],
+  "Mem-stat.py": [
+    "Memory statistic of any programm running in an linux OS,",
+    "Also calculates other dependencies too"
+  ],
+  "IndiansInWorld.py": [
+    "Gives statistics about the Indian Diaspora in interactive graphs using Python libraries",
+    "Check out the static analysis report here:"
+  ],
+  "netSpeed.py": [
+    "This program calculates speed of your internet by using an open-source library,",
+    "works on all the OS"
+  ],
+  "descriptions.json": [
+    "has descriptions for the files hosted here"
+  ],
+  "index.html": [
+    "The thing running this website which you are viewing now"
+  ],
+  
+  "encry.py": [
+    "Encrypt using lookalikes of alphabets,",
+    "Requirements:",
+    "Unicode-supported font and terminal",
+    "cryptography library",
+    "uv installed (RUN IT USING UV)"
+  ],
+  "DownLoad.py": [
+    "This uses python and  yt-dlp(successor of yt-dl for a good UI for downloadding mp3 or mp4"
+  ],
+  "desc_manager/interface.py": [
+    "comment only"
+  ],
+  "desc_manager/__pycache__/interface.cpython-313.pyc": [
+    "hello world"
+  ],
+  "hide":[
+    "bash script to hide terminal infos and start asciinema",
+    "",
+    "Tip: use termtosvg from python to convert .cast to .svg"
+  ]
+}
