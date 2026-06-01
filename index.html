@@ -126,107 +126,85 @@
         </ul>
     </div>
 
-    <script>
-        const repoOwner = 'tnm-yes-anyidea';
-        const repoName = 'uncommon-tinkering';
-        const repoApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-        const descriptionsUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/descriptions.json`;
-        const CACHE_EXPIRATION = 3600000; 
+<script>
+    const repoOwner = 'tnm-yes-anyidea';
+    const repoName = 'uncommon-tinkering';
+    const descriptionsUrl = `./descriptions.json`; // Read locally
+    const filesUrl = `./files.json`;               // Read locally generated file
 
-        async function fetchDescriptions() {
-            try {
-                const response = await fetch(descriptionsUrl);
-                if (!response.ok) return {};
-                return await response.json();
-            } catch (err) {
-                console.error("Could not load descriptions.json", err);
-                return {};
-            }
+    async function fetchDescriptions() {
+        try {
+            const response = await fetch(descriptionsUrl);
+            if (!response.ok) return {};
+            return await response.json();
+        } catch (err) {
+            console.error("Could not load descriptions.json", err);
+            return {};
+        }
+    }
+
+    function filterDotfiles(files) {
+        return files.filter(file => !file.name.startsWith('.'));
+    }
+
+    function renderFiles(files, descriptionsMap) {
+        const fileList = document.getElementById('file-list');
+        const visibleFiles = filterDotfiles(files);
+        
+        if (visibleFiles.length === 0) {
+            fileList.innerHTML = "<li>No files found in this repository.</li>";
+            return;
         }
 
-        function filterDotfiles(files) {
-            return files.filter(file => !file.name.startsWith('.'));
-        }
-
-        function renderFiles(files, descriptionsMap) {
-            const fileList = document.getElementById('file-list');
-            const visibleFiles = filterDotfiles(files);
+        fileList.innerHTML = visibleFiles.map(file => {
+            const rawDesc = descriptionsMap[file.name];
+            let descHtml = `<span class="no-desc">No description available for ${file.name}.</span>`;
             
-            if (visibleFiles.length === 0) {
-                fileList.innerHTML = "<li>No files found in this repository.</li>";
-                return;
-            }
-
-            fileList.innerHTML = visibleFiles.map(file => {
-                const rawDesc = descriptionsMap[file.name];
-                let descHtml = `<span class="no-desc">No description available for ${file.name}.</span>`;
+            if (rawDesc && Array.isArray(rawDesc)) {
+                descHtml = rawDesc.map(para => `<p>${para}</p>`).join('');
                 
-                if (rawDesc && Array.isArray(rawDesc)) {
-                    descHtml = rawDesc
-                        .map(para => `<p>${para}</p>`)
-                        .join('');
-                    
-                    // Logic to inject the diaspora analysis link
-                    if (file.name === "IndiansInWorld.py") {
-                        descHtml += `
-                            <a href="https://github.com/tnm-yes-anyidea/uncommon-tinkering/blob/main/extras/diaspora_analysis.png" 
-                               target="_blank" 
-                               class="analysis-link">
-                               📊 View Diaspora Analysis Image
-                            </a>`;
-                    }
+                if (file.name === "IndiansInWorld.py") {
+                    descHtml += `
+                        <a href="https://github.com/tnm-yes-anyidea/uncommon-tinkering/blob/main/extras/diaspora_analysis.png" 
+                           target="_blank" 
+                           class="analysis-link">
+                           📊 View Diaspora Analysis Image
+                        </a>`;
                 }
-
-                return `
-                    <li>
-                        <div class="file-header">
-                            <a href="${file.html_url}" target="_blank" class="file-link">
-                                ${file.name}
-                            </a>
-                            <span class="file-info">${file.type}</span>
-                        </div>
-                        <div class="description-container">
-                            ${descHtml}
-                        </div>
-                    </li>
-                `;
-            }).join('');
-        }
-
-        async function init() {
-            const fileList = document.getElementById('file-list');
-            const now = new Date().getTime();
-
-            try {
-                const cachedData = localStorage.getItem('github_files_cache');
-                const cachedTime = localStorage.getItem('github_files_timestamp');
-
-                if (cachedData && cachedTime && (now - cachedTime < CACHE_EXPIRATION)) {
-                    const data = JSON.parse(cachedData);
-                    const descriptions = await fetchDescriptions(); 
-                    renderFiles(data.files, descriptions);
-                    return;
-                }
-
-                const [repoRes, descriptionsMap] = await Promise.all([
-                    fetch(repoApiUrl),
-                    fetchDescriptions()
-                ]);
-
-                if (!repoRes.ok) throw new Error("GitHub API Error: " + repoRes.statusText);
-
-                const files = await repoRes.json();
-
-                localStorage.setItem('github_files_cache', JSON.stringify({ files }));
-                localStorage.setItem('github_files_timestamp', now.toString());
-
-                renderFiles(files, descriptionsMap);
-            } catch (error) {
-                fileList.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Error: ${error.message}</p>`;
             }
-        }
 
-        init();
-    </script>
-</body>
-</html>
+            return `
+                <li>
+                    <div class="file-header">
+                        <a href="${file.html_url}" target="_blank" class="file-link">
+                            ${file.name}
+                        </a>
+                        <span class="file-info">${file.type}</span>
+                    </div>
+                    <div class="description-container">
+                        ${descHtml}
+                    </div>
+                </li>
+            `;
+        }).join('');
+    }
+
+    async function init() {
+        const fileList = document.getElementById('file-list');
+        try {
+            const [filesRes, descriptionsMap] = await Promise.all([
+                fetch(filesUrl),
+                fetchDescriptions()
+            ]);
+
+            if (!filesRes.ok) throw new Error("Could not load files list.");
+            const files = await filesRes.json();
+
+            renderFiles(files, descriptionsMap);
+        } catch (error) {
+            fileList.innerHTML = `<p style="color: #ff4d4d; text-align: center;">Error: ${error.message}</p>`;
+        }
+    }
+
+    init();
+</script>
